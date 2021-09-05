@@ -3,6 +3,7 @@ import { Row, Col } from 'antd';
 import axios from 'axios';
 import SatSetting from './SatSetting';
 import SatelliteList from './SatelliteList';
+import WorldMap from "./WorldMap";
 import {NEARBY_SATELLITE, SAT_API_KEY, STARLINK_CATEGORY} from "../constants";
 
 class Main extends Component {
@@ -10,15 +11,10 @@ class Main extends Component {
         super();
         this.state = {
             satInfo: null,
-            settings: null,
             isLoadingList: false
         };
     }
-
     showNearbySatellite = (setting) => {
-        this.setState({
-            settings: setting
-        })
         this.fetchSatellite(setting);
     }
 
@@ -32,7 +28,7 @@ class Main extends Component {
 
         axios.get(url)
             .then(response => {
-                console.log('success -> ', response.data)
+                console.log(response.data)
                 this.setState({
                     satInfo: response.data,
                     isLoadingList: false
@@ -40,27 +36,25 @@ class Main extends Component {
             })
             .catch(error => {
                 console.log('err in fetch satellite -> ', error);
-                setTimeout(() => {
-                    this.setState({
-                        isLoadingList: false
-                    });
-                }, 3000)
-
             })
     }
 
+    showMap = () => {
+        console.log('show on the map');
+    }
+
     render() {
-        const { satInfo } = this.state;
+        const { satInfo, isLoadingList } = this.state;
         return (
             <Row className='main'>
-                <Col span={8}>
+                <Col span={8} className="left-side" >
                     <SatSetting onShow={this.showNearbySatellite}/>
                     <SatelliteList satInfo={satInfo}
-                                   isLoad={this.state.isLoadingList}
-                    />
+                                   onShowMap={this.showMap}
+                                   isLoad={isLoadingList} />
                 </Col>
                 <Col span={16} className="right-side">
-                    right
+                    <WorldMap />
                 </Col>
             </Row>
         );
@@ -68,4 +62,3 @@ class Main extends Component {
 }
 
 export default Main;
-
